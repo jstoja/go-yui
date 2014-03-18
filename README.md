@@ -1,6 +1,5 @@
 Go-Yui
 ======
----
 
   Go-Yui is a golang **interface** to Yui-Compressor, for minifying Javascript and CSS assets.
 
@@ -9,7 +8,7 @@ Go-Yui
 [Yui-Compressor GitHub page](http://yui.github.io/yuicompressor/)
 
 #Getting started
----
+
 After installing Go and setting up your GOPATH, create a golang file.
 ##To minify some CSS
 
@@ -90,8 +89,9 @@ You just have to run it:
 	go run example.go
 	
 #Features
----
+
 ##Now
+
 It:
 
 * Grabs the yui-compressor jar according to the package directory
@@ -101,6 +101,7 @@ It:
 * Uses the yui-compressor jar
 
 ##In the near future
+
 It'll:
 
 * Take a stream/file to a js-file to process it
@@ -109,6 +110,7 @@ It'll:
 * Integrated as a [Martini](https://github.com/codegangsta/martini/) plugin since I think this go-package is **super-cool**
 
 ##In the great future
+
 I'd like it:
 
 * Rewritten using pure concurrent Go instead of using the lib
@@ -120,6 +122,7 @@ I'd like it:
 **This is my first go-package and since I'm new to Golang, I would really appreciate all advices about this work.**
 
 #Licence
+
 ##Go-Yui code (MIT license)
 
 	The MIT License (MIT)
