@@ -41,33 +41,34 @@ func fixture_error_js() string {
 	return "var x = {class: 'name'};"
 }
 
-func TestValidityCommand(t *testing.T) {
+func TestUseJarPath(t *testing.T) {
 	yc := New()
-	if yc.Command() != "/usr/bin/java -jar yuicompressor-2.4.8.jar" {
-		t.Error("The base command is not valid: " + yc.Command())
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	if yc.Command() != "/usr/bin/java -jar ./yuicompressor-2.4.8.jar" {
+		t.Error("Impossible to set a new jar_path: " + yc.Command())
 	}
 }
 
 func TestUseJavaPath(t *testing.T) {
 	yc := New()
 	yc.UseJavaPath("/var/test/path/java")
-	if yc.Command() != "/var/test/path/java -jar yuicompressor-2.4.8.jar" {
-		t.Error("Impossible to set a new java_path: " + yc.Command())
-	}
-}
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
 
-func TestUseJarPath(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("/tmp/yui-jar/yui-compressor.jar")
-	if yc.Command() != "/usr/bin/java -jar /tmp/yui-jar/yui-compressor.jar" {
-		t.Error("Impossible to set a new jar_path: " + yc.Command())
+	expected_command := "/var/test/path/java -jar ./yuicompressor-2.4.8.jar"
+
+	if yc.Command() != expected_command {
+		t.Error("Impossible to set a new java_path: " + yc.Command())
 	}
 }
 
 func TestUseJvmOptions(t *testing.T) {
 	yc := New()
+	yc.UseJavaPath("/usr/bin/java")
 	yc.UseJvmOptions("-Xms64M -Xmx64M")
-	if yc.Command() != "/usr/bin/java -Xms64M -Xmx64M -jar yuicompressor-2.4.8.jar" {
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+
+	expected_command := "/usr/bin/java -Xms64M -Xmx64M -jar ./yuicompressor-2.4.8.jar"
+	if yc.Command() != expected_command {
 		t.Error("Impossible to set jvm opts: " + yc.Command())
 	}
 
@@ -81,6 +82,7 @@ func TestValidity(t *testing.T) {
 	AAElFTkSuQmCC\') no-repeat scroll left top;}`
 	
 	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
 	_, err := yc.MinifyCss(data_uri_css)
 	if err != nil {
 		t.Error(err)
@@ -90,6 +92,7 @@ func TestValidity(t *testing.T) {
 
 func TestMinifyCss(t *testing.T) {
 	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
 	output, err := yc.MinifyCss(fixture_css())
 	if err != nil {
 		t.Error(err)
@@ -101,6 +104,7 @@ func TestMinifyCss(t *testing.T) {
 
 func TestMinifyJs(t *testing.T) {
 	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
 	output, err := yc.MinifyJs(fixture_js())
 	if err != nil {
 		t.Error(err)
