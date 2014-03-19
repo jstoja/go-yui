@@ -19,28 +19,13 @@ After installing Go and setting up your GOPATH, create a golang file.
 
 		"github.com/jstoja/go-yui"
 	)
-
+	
 	func main() {
-		input := string(
-		`div.warning {
-			display: none;
-		}
-
-		div.error {
-			background: red;
-			color: white;
-		}
-
-		@media screen and (max-device-width: 640px) {
-			body { font-size: 90%; }
-		}`)
-
 		yc := yuicompressor.New()
-		output, err := yc.MinifyCss(input)
+		output, err := yc.MinifyCssFile("file.css")
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(input)
 		fmt.Println(output)		
 	}
 	
@@ -55,27 +40,11 @@ After installing Go and setting up your GOPATH, create a golang file.
 	)
 
 	func main() {
-		input := string(
-		`// here's a comment
-		var Foo = { "a": 1 };
-		Foo["bar"] = (function(baz) {
-			/* here's a
-			multiline comment */
-			if (false) {
-				doSomething();
-			} else {
-				for (var index = 0; index < baz.length; index++) {
-					doSomething(baz[index]);
-			}
-		}
-		})("hello");`)
-
 		yc := yuicompressor.New()
-		output, err := yc.MinifyJs(input)
+		output, err := yc.MinifyJsFile("file.js")
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(input)
 		fmt.Println(output)		
 	}
 	
@@ -83,11 +52,11 @@ After installing Go and setting up your GOPATH, create a golang file.
 Then install the yui-go package using the command:
 
 	go get github.com/jstoja/go-yui
-	
+
 You just have to run it:
 
 	go run example.go
-	
+
 #Features
 
 ##Now
