@@ -1,23 +1,23 @@
 package yuicompressor
 
 import (
-	"os"
 	"io"
-	"strings"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 type Compressor struct {
-	command		[]string
+	command   []string
 	jvmParams string
-	jarPath		string
-	javaPath 	string
+	jarPath   string
+	javaPath  string
 }
 
-func New() (*Compressor) {
+func New() *Compressor {
 	return &Compressor{}
 }
 
@@ -39,7 +39,7 @@ func (yuicomp Compressor) MinifyJsFile(filename string) (string, error) {
 	command_array := append(yuicomp.command, "--type", "js", "--nomunge", filename)
 	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
 	outputStr := string(output[:])
-	return outputStr, err	
+	return outputStr, err
 }
 
 func (yuicomp Compressor) MinifyCssString(cssStr string) (string, error) {
@@ -60,7 +60,7 @@ func (yuicomp Compressor) MinifyCssFile(filename string) (string, error) {
 	command_array := append(yuicomp.command, "--type", "css", filename)
 	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
 	outputStr := string(output[:])
-	return outputStr, err	
+	return outputStr, err
 }
 
 func (yuicomp *Compressor) Command() string {
@@ -114,7 +114,7 @@ func getDefaultJavaPath() string {
 	return java_path
 }
 
-func createTmpfile() (*os.File) {
+func createTmpfile() *os.File {
 	tmpfile, err := ioutil.TempFile("/tmp", "yui_compress")
 	if err != nil {
 		panic("Impossible to create a temporary file in /tmp.")

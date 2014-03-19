@@ -5,39 +5,36 @@ import (
 	"testing"
 )
 
-const	(
-	fixture_css = (
-`div.warning {
-	display: none;
-}
-
-div.error {
-	background: red;
-	color: white;
-}
-
-@media screen and (max-device-width: 640px) {
-	body { font-size: 90%; }
-}`)
-
- fixture_css_minified = "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}"
-
- fixture_js = (
-`// here's a comment
-var Foo = { "a": 1 };
-Foo["bar"] = (function(baz) {
-	/* here's a
-	multiline comment */
-	if (false) {
-		doSomething();
-	} else {
-		for (var index = 0; index < baz.length; index++) {
-			doSomething(baz[index]);
+const (
+	fixture_css = (`div.warning {
+			display: none;
 		}
-	}
-})("hello");`)
 
- fixture_js_minified = "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");"
+		div.error {
+			background: red;
+			color: white;
+		}
+
+		@media screen and (max-device-width: 640px) {
+			body { font-size: 90%; }
+		}`)
+
+	fixture_js = (`// here's a comment
+		var Foo = { "a": 1 };
+		Foo["bar"] = (function(baz) {
+			/* here's a
+			multiline comment */
+			if (false) {
+				doSomething();
+			} else {
+				for (var index = 0; index < baz.length; index++) {
+					doSomething(baz[index]);
+				}
+			}
+		})("hello");`)
+
+	fixture_css_minified = "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}"
+	fixture_js_minified  = "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");"
 )
 
 func TestUseJarPath(t *testing.T) {
@@ -79,7 +76,7 @@ func TestValidity(t *testing.T) {
 	gAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h
 	/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAA
 	AAElFTkSuQmCC\') no-repeat scroll left top;}`
-	
+
 	yc := New()
 	yc.UseJarPath("./yuicompressor-2.4.8.jar")
 	_, err := yc.MinifyCssString(data_uri_css)
