@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-const	fixture_css = (
+const	(
+	fixture_css = (
 `div.warning {
 	display: none;
 }
@@ -19,7 +20,9 @@ div.error {
 	body { font-size: 90%; }
 }`)
 
-const fixture_js = (
+ fixture_css_minified = "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}"
+
+ fixture_js = (
 `// here's a comment
 var Foo = { "a": 1 };
 Foo["bar"] = (function(baz) {
@@ -33,6 +36,9 @@ Foo["bar"] = (function(baz) {
 		}
 	}
 })("hello");`)
+
+ fixture_js_minified = "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");"
+)
 
 func TestUseJarPath(t *testing.T) {
 	yc := New()
@@ -90,7 +96,7 @@ func TestMinifyCss(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if output != "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}" {
+	if output != fixture_css_minified {
 		t.Error("The CSS should be compressed and it's not.")
 	}
 }
@@ -103,7 +109,7 @@ func TestMinifyCssReader(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if output != "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}" {
+	if output != fixture_css_minified {
 		t.Error("The JS should be compressed with a stream and it's not.")
 	}
 }
@@ -115,8 +121,8 @@ func TestMinifyCssFile(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if output != "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}" {
-		t.Error("The JS should be compressed with a stream and it's not.")
+	if output != fixture_css_minified {
+		t.Error("The JS should be compressed with a file and it's not.")
 	}
 }
 
@@ -127,7 +133,7 @@ func TestMinifyJs(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if output != "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");" {
+	if output != fixture_js_minified {
 		t.Error("The JS should be compressed and it's not.")
 	}
 }
