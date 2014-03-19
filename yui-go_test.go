@@ -5,42 +5,34 @@ import (
 	"testing"
 )
 
-func fixture_css() string {
-	return(
-		`div.warning {
-			display: none;
-		}
-
-		div.error {
-			background: red;
-			color: white;
-		}
-
-		@media screen and (max-device-width: 640px) {
-			body { font-size: 90%; }
-		}`)
+const	fixture_css = (
+`div.warning {
+	display: none;
 }
 
-func fixture_js() string {
-	return(
-	`// here's a comment
-	var Foo = { "a": 1 };
-	Foo["bar"] = (function(baz) {
-		/* here's a
-		multiline comment */
-		if (false) {
-			doSomething();
-		} else {
-			for (var index = 0; index < baz.length; index++) {
-				doSomething(baz[index]);
-			}
-		}
-	})("hello");`)
+div.error {
+	background: red;
+	color: white;
 }
 
-func fixture_error_js() string {
-	return "var x = {class: 'name'};"
-}
+@media screen and (max-device-width: 640px) {
+	body { font-size: 90%; }
+}`)
+
+const fixture_js = (
+`// here's a comment
+var Foo = { "a": 1 };
+Foo["bar"] = (function(baz) {
+	/* here's a
+	multiline comment */
+	if (false) {
+		doSomething();
+	} else {
+		for (var index = 0; index < baz.length; index++) {
+			doSomething(baz[index]);
+		}
+	}
+})("hello");`)
 
 func TestUseJarPath(t *testing.T) {
 	yc := New()
@@ -94,7 +86,7 @@ func TestValidity(t *testing.T) {
 func TestMinifyCss(t *testing.T) {
 	yc := New()
 	yc.UseJarPath("./yuicompressor-2.4.8.jar")
-	output, err := yc.MinifyCssString(fixture_css())
+	output, err := yc.MinifyCssString(fixture_css)
 	if err != nil {
 		t.Error(err)
 	}
@@ -131,7 +123,7 @@ func TestMinifyCssFile(t *testing.T) {
 func TestMinifyJs(t *testing.T) {
 	yc := New()
 	yc.UseJarPath("./yuicompressor-2.4.8.jar")
-	output, err := yc.MinifyJsString(fixture_js())
+	output, err := yc.MinifyJsString(fixture_js)
 	if err != nil {
 		t.Error(err)
 	}
