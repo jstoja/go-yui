@@ -96,16 +96,14 @@ It:
 
 * Grabs the yui-compressor jar according to the package directory
 * Takes JAVA/JAR/JVM parameters to fit your environment
-* Takes a CSS string and process it
-* Takes a JS string and process it
+* Takes a CSS string/stream/file and process it
+* Takes a JS string/stream/file and process it
 * Uses the yui-compressor jar
 
 ##In the near future
 
 It'll:
 
-* Take a stream/file to a js-file to process it
-* Take a stream/file to a css-file to process it
 * Be able to use all options of yui-compressor
 * Integrated as a [Martini](https://github.com/codegangsta/martini/) plugin since I think this go-package is **super-cool**
 
