@@ -1,0 +1,12 @@
+div.warning {
+  display: none;
+}
+
+div.error {
+  background: red;
+  color: white;
+}
+
+@media screen and (max-device-width: 640px) {
+  body { font-size: 90%; }
+}

@@ -1,6 +1,7 @@
 package yuicompressor
 
 import (
+	"os"
 	"testing"
 )
 
@@ -83,7 +84,7 @@ func TestValidity(t *testing.T) {
 	
 	yc := New()
 	yc.UseJarPath("./yuicompressor-2.4.8.jar")
-	_, err := yc.MinifyCss(data_uri_css)
+	_, err := yc.MinifyCssString(data_uri_css)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -93,7 +94,7 @@ func TestValidity(t *testing.T) {
 func TestMinifyCss(t *testing.T) {
 	yc := New()
 	yc.UseJarPath("./yuicompressor-2.4.8.jar")
-	output, err := yc.MinifyCss(fixture_css())
+	output, err := yc.MinifyCssString(fixture_css())
 	if err != nil {
 		t.Error(err)
 	}
@@ -102,14 +103,64 @@ func TestMinifyCss(t *testing.T) {
 	}
 }
 
+func TestMinifyCssReader(t *testing.T) {
+	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	fd, err := os.Open("assets_test/test1.css")
+	output, err := yc.MinifyCssReader(fd)
+	if err != nil {
+		t.Error(err)
+	}
+	if output != "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}" {
+		t.Error("The JS should be compressed with a stream and it's not.")
+	}
+}
+
+func TestMinifyCssFile(t *testing.T) {
+	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	output, err := yc.MinifyCssFile("assets_test/test1.css")
+	if err != nil {
+		t.Error(err)
+	}
+	if output != "div.warning{display:none}div.error{background:red;color:white}@media screen and (max-device-width:640px){body{font-size:90%}}" {
+		t.Error("The JS should be compressed with a stream and it's not.")
+	}
+}
+
 func TestMinifyJs(t *testing.T) {
 	yc := New()
 	yc.UseJarPath("./yuicompressor-2.4.8.jar")
-	output, err := yc.MinifyJs(fixture_js())
+	output, err := yc.MinifyJsString(fixture_js())
 	if err != nil {
 		t.Error(err)
 	}
 	if output != "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");" {
 		t.Error("The JS should be compressed and it's not.")
+	}
+}
+
+func TestMinifyJsReader(t *testing.T) {
+	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	fd, err := os.Open("assets_test/test1.js")
+	output, err := yc.MinifyJsReader(fd)
+	if err != nil {
+		t.Error(err)
+	}
+	if output != "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");" {
+		t.Error("The JS should be compressed with a stream and it's not.")
+	}
+}
+
+func TestMinifyJsFile(t *testing.T) {
+	yc := New()
+	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	output, err := yc.MinifyJsFile("assets_test/test1.js")
+	if err != nil {
+		t.Error(err)
+	}
+	if output != "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");" {
+		t.Error("The JS should be compressed with a stream and it's not.")
 	}
 }

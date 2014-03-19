@@ -2,6 +2,7 @@ package yuicompressor
 
 import (
 	"os"
+	"io"
 	"strings"
 	"io/ioutil"
 	"os/exec"
@@ -20,36 +21,46 @@ func New() (*Compressor) {
 	return &Compressor{}
 }
 
-func (yuicomp Compressor) MinifyJs(jsStr string) (string, error) {
+func (yuicomp Compressor) MinifyJsReader(reader io.Reader) (string, error) {
 	tmpfile := createTmpfile()
-
-	tmpfile.WriteString(jsStr)
-	tmpfile.Sync()
-
-	yuicomp.generateFullCommand()
-	command_array := append(yuicomp.command, "--type", "js", "--nomunge", tmpfile.Name())
-	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
-	outputStr := string(output[:])
-
+	readerAsFile(reader, tmpfile)
+	outputStr, err := yuicomp.MinifyJsFile(tmpfile.Name())
 	tmpfile.Close()
-
 	return outputStr, err
 }
 
-func (yuicomp Compressor) MinifyCss(cssStr string) (string, error) {
-	tmpfile := createTmpfile()
+func (yuicomp Compressor) MinifyJsString(jsStr string) (string, error) {
+	reader := strings.NewReader(jsStr)
+	return yuicomp.MinifyJsReader(reader)
+}
 
-	tmpfile.WriteString(cssStr)
-	tmpfile.Sync()
-
+func (yuicomp Compressor) MinifyJsFile(filename string) (string, error) {
 	yuicomp.generateFullCommand()
-	command_array := append(yuicomp.command, "--type", "css", tmpfile.Name())
+	command_array := append(yuicomp.command, "--type", "js", "--nomunge", filename)
 	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
 	outputStr := string(output[:])
+	return outputStr, err	
+}
 
+func (yuicomp Compressor) MinifyCssString(cssStr string) (string, error) {
+	reader := strings.NewReader(cssStr)
+	return yuicomp.MinifyCssReader(reader)
+}
+
+func (yuicomp Compressor) MinifyCssReader(reader io.Reader) (string, error) {
+	tmpfile := createTmpfile()
+	readerAsFile(reader, tmpfile)
+	outputStr, err := yuicomp.MinifyCssFile(tmpfile.Name())
 	tmpfile.Close()
-
 	return outputStr, err
+}
+
+func (yuicomp Compressor) MinifyCssFile(filename string) (string, error) {
+	yuicomp.generateFullCommand()
+	command_array := append(yuicomp.command, "--type", "css", filename)
+	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
+	outputStr := string(output[:])
+	return outputStr, err	
 }
 
 func (yuicomp *Compressor) Command() string {
@@ -109,4 +120,16 @@ func createTmpfile() (*os.File) {
 		panic("Impossible to create a temporary file in /tmp.")
 	}
 	return tmpfile
+}
+
+func readerAsFile(reader io.Reader, tmpfile *os.File) {
+	tmpstring := make([]byte, 1024)
+	n, err := reader.Read(tmpstring)
+	tmpfile.Write(tmpstring[:n])
+	for err != nil {
+		n, err = reader.Read(tmpstring)
+		if err != nil {
+			tmpfile.Write(tmpstring[:n])
+		}
+	}
 }
