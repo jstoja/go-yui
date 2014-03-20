@@ -1,7 +1,6 @@
 package yuicompressor
 
 import (
-	"os"
 	"testing"
 )
 
@@ -74,91 +73,59 @@ func TestUseJvmOptions(t *testing.T) {
 }
 
 func TestValidity(t *testing.T) {
-	data_uri_css := `div {
-	background: white url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEU
-	gAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h
-	/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAA
-	AAElFTkSuQmCC\') no-repeat scroll left top;}`
-
 	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
 
-	_, err := yc.MinifyCssString(data_uri_css)
+	_, err := yc.MinifyJs().FromString(fixture_js).ToString()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 }
 
-func TestMinifyCss(t *testing.T) {
+func TestJSStringtoString(t *testing.T) {
 	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
 
-	output, err := yc.MinifyCssString(fixture_css)
-	if err != nil {
-		t.Error(err)
-	}
-	if output != fixture_css_minified {
-		t.Error("The CSS should be compressed and it's not.")
-	}
-}
-
-func TestMinifyCssReader(t *testing.T) {
-	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
-
-	fd, err := os.Open("assets_test/test1.css")
-	output, err := yc.MinifyCssReader(fd)
-	if err != nil {
-		t.Error(err)
-	}
-	if output != fixture_css_minified {
-		t.Error("The JS should be compressed with a stream and it's not.")
-	}
-}
-
-func TestMinifyCssFile(t *testing.T) {
-	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
-
-	output, err := yc.MinifyCssFile("assets_test/test1.css")
-	if err != nil {
-		t.Error(err)
-	}
-	if output != fixture_css_minified {
-		t.Error("The JS should be compressed with a file and it's not.")
-	}
-}
-
-func TestMinifyJs(t *testing.T) {
-	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
-
-	output, err := yc.MinifyJsString(fixture_js)
+	output, err := yc.MinifyJs().FromString(fixture_js).ToString()
 	if err != nil {
 		t.Error(err)
 	}
 	if output != fixture_js_minified {
-		t.Error("The JS should be compressed and it's not.")
+		t.Error("The JS should be compressed to a String with a String and it's not.")
 	}
 }
 
-func TestMinifyJsReader(t *testing.T) {
+func TestJSFiletoString(t *testing.T) {
 	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
 
-	fd, err := os.Open("assets_test/test1.js")
-	output, err := yc.MinifyJsReader(fd)
+	output, err := yc.MinifyJs().FromFile("assets_test/test1.js").ToString()
 	if err != nil {
 		t.Error(err)
 	}
-	if output != "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");" {
-		t.Error("The JS should be compressed with a stream and it's not.")
+	if output != fixture_js_minified {
+		t.Error("The JS should be compressed to a String with a File and it's not.")
 	}
 }
 
-func TestMinifyJsFile(t *testing.T) {
+func TestCSSStringtoString(t *testing.T) {
 	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
 
-	output, err := yc.MinifyJsFile("assets_test/test1.js")
+	output, err := yc.MinifyCss().FromString(fixture_css).ToString()
 	if err != nil {
 		t.Error(err)
 	}
-	if output != "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");" {
-		t.Error("The JS should be compressed with a stream and it's not.")
+	if output != fixture_css_minified {
+		t.Error("The CSS should be compressed to a String with a String and it's not.")
+	}
+}
+
+func TestCSSFiletoString(t *testing.T) {
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
+	output, err := yc.MinifyCss().FromFile("assets_test/test1.css").ToString()
+	if err != nil {
+		t.Error(err)
+	}
+	if output != fixture_css_minified {
+		t.Error("The CSS should be compressed to a String with a File and it's not.")
 	}
 }

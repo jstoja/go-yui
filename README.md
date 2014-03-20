@@ -9,6 +9,8 @@ Go-Yui
 
 #Getting started
 
+The goal of this package is to be the most expressive as possible. You **minify** some CSS or JS **from** a file or a string **to** a file or a string. So the syntax is very clear about that.
+
 After installing Go and setting up your GOPATH, create a golang file.
 ##To minify some CSS
 
@@ -25,11 +27,13 @@ After installing Go and setting up your GOPATH, create a golang file.
 			"javapath":  "/var/test/path/java",
 			"jvmparams": "-Xms64M -Xmx64M"})
 	
-		output, err := yc.MinifyCssFile("file.css")
+		output, err := yc.MinifyCss().FromString(fixture_css).ToString()
+		// or
+		// output, err := yc.MinifyCss().FromFile(example).ToString()
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(output)		
+		fmt.Println(output)
 	}
 	
 ##To minify some JS
@@ -47,7 +51,9 @@ After installing Go and setting up your GOPATH, create a golang file.
 			"javapath":  "/var/test/path/java",
 			"jvmparams": "-Xms64M -Xmx64M"})
 
-		output, err := yc.MinifyJsFile("file.js")
+		output, err := yc.MinifyJs().FromString(fixture_js).ToString()
+		// or
+		// filepath, err := yc.MinifyJs().FromString(fixture_js).ToFile("example.min.js")
 		if err != nil {
 			panic(err)
 		}
