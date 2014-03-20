@@ -10,18 +10,35 @@ import (
 	"strings"
 )
 
-type Compressor struct {
+type YuiCompressor struct {
 	command   []string
+	options   map[string]string
 	jvmParams string
 	jarPath   string
 	javaPath  string
 }
 
-func New() *Compressor {
-	return &Compressor{}
+func NewYuiCompressor() *YuiCompressor {
+	return &YuiCompressor{options: make(map[string]string)}
 }
 
-func (yuicomp Compressor) MinifyJsReader(reader io.Reader) (string, error) {
+func (yuicomp *YuiCompressor) Options(options map[string]string) *YuiCompressor {
+	if options != nil {
+		yuicomp.useParameters(options, "javapath")
+		yuicomp.useParameters(options, "jarpath")
+		yuicomp.useParameters(options, "jvmparams")
+	}
+	return yuicomp
+}
+
+func (yuicomp *YuiCompressor) useParameters(options map[string]string, field string) {
+	_, err := options[field]
+	if err == true {
+		yuicomp.options[field] = options[field]
+	}
+}
+
+func (yuicomp YuiCompressor) MinifyJsReader(reader io.Reader) (string, error) {
 	tmpfile := createTmpfile()
 	readerAsFile(reader, tmpfile)
 	outputStr, err := yuicomp.MinifyJsFile(tmpfile.Name())
@@ -29,12 +46,12 @@ func (yuicomp Compressor) MinifyJsReader(reader io.Reader) (string, error) {
 	return outputStr, err
 }
 
-func (yuicomp Compressor) MinifyJsString(jsStr string) (string, error) {
+func (yuicomp YuiCompressor) MinifyJsString(jsStr string) (string, error) {
 	reader := strings.NewReader(jsStr)
 	return yuicomp.MinifyJsReader(reader)
 }
 
-func (yuicomp Compressor) MinifyJsFile(filename string) (string, error) {
+func (yuicomp YuiCompressor) MinifyJsFile(filename string) (string, error) {
 	yuicomp.generateFullCommand()
 	command_array := append(yuicomp.command, "--type", "js", "--nomunge", filename)
 	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
@@ -42,12 +59,12 @@ func (yuicomp Compressor) MinifyJsFile(filename string) (string, error) {
 	return outputStr, err
 }
 
-func (yuicomp Compressor) MinifyCssString(cssStr string) (string, error) {
+func (yuicomp YuiCompressor) MinifyCssString(cssStr string) (string, error) {
 	reader := strings.NewReader(cssStr)
 	return yuicomp.MinifyCssReader(reader)
 }
 
-func (yuicomp Compressor) MinifyCssReader(reader io.Reader) (string, error) {
+func (yuicomp YuiCompressor) MinifyCssReader(reader io.Reader) (string, error) {
 	tmpfile := createTmpfile()
 	readerAsFile(reader, tmpfile)
 	outputStr, err := yuicomp.MinifyCssFile(tmpfile.Name())
@@ -55,7 +72,7 @@ func (yuicomp Compressor) MinifyCssReader(reader io.Reader) (string, error) {
 	return outputStr, err
 }
 
-func (yuicomp Compressor) MinifyCssFile(filename string) (string, error) {
+func (yuicomp YuiCompressor) MinifyCssFile(filename string) (string, error) {
 	yuicomp.generateFullCommand()
 	command_array := append(yuicomp.command, "--type", "css", filename)
 	output, err := exec.Command(command_array[0], command_array[1:]...).Output()
@@ -63,43 +80,33 @@ func (yuicomp Compressor) MinifyCssFile(filename string) (string, error) {
 	return outputStr, err
 }
 
-func (yuicomp *Compressor) Command() string {
+func (yuicomp *YuiCompressor) Command() string {
 	yuicomp.generateFullCommand()
 	return strings.Join(yuicomp.command, " ")
 }
 
-func (yuicomp *Compressor) UseJavaPath(javaPath string) {
-	yuicomp.javaPath = javaPath
-}
-
-func (yuicomp *Compressor) UseJarPath(jarPath string) {
-	yuicomp.jarPath = jarPath
-}
-
-func (yuicomp *Compressor) UseJvmOptions(jvmParams string) {
-	yuicomp.jvmParams = jvmParams
-}
-
-func (yuicomp *Compressor) generateFullCommand() {
-	yuicomp.command = []string{yuicomp.getJavaPath()}
-	if yuicomp.jvmParams != "" {
-		yuicomp.command = append(yuicomp.command, yuicomp.jvmParams)
+func (yuicomp *YuiCompressor) generateFullCommand() {
+	yuicomp.command = []string{yuicomp.getOptionField("javapath", getDefaultJavaPath)}
+	_, e := yuicomp.options["jvmparams"]
+	if e == true {
+		yuicomp.command = append(yuicomp.command, yuicomp.options["jvmparams"])
 	}
 
-	yuicomp.command = append(yuicomp.command, "-jar", yuicomp.getJarPath())
+	yuicomp.command = append(yuicomp.command, "-jar", yuicomp.getOptionField("jarpath", getDefaultJarPath))
 }
 
-func (yuicomp Compressor) getJavaPath() string {
-	if yuicomp.javaPath != "" {
-		return yuicomp.javaPath
+type OptionFallback func() string
+
+func (yuicomp YuiCompressor) getOptionField(field string, fb OptionFallback) string {
+	v, e := yuicomp.options[field]
+	if e == true {
+		return v
+	} else {
+		return fb()
 	}
-	return getDefaultJavaPath()
 }
 
-func (yuicomp Compressor) getJarPath() string {
-	if yuicomp.jarPath != "" {
-		return yuicomp.jarPath
-	}
+func getDefaultJarPath() string {
 	// The only trick I found to get the package directory where the jarfile is stored
 	_, filename, _, _ := runtime.Caller(1)
 	jarPath := filepath.Dir(filename) + "/yuicompressor-2.4.8.jar"

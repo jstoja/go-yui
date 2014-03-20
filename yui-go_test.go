@@ -37,33 +37,36 @@ const (
 	fixture_js_minified  = "var Foo={a:1};Foo.bar=(function(baz){if(false){doSomething()}else{for(var index=0;index<baz.length;index++){doSomething(baz[index])}}})(\"hello\");"
 )
 
+func TestOptions(t *testing.T) {
+	yc := NewYuiCompressor()
+	yc.Options(map[string]string{"javapath": "/usr/bin/java"})
+}
+
 func TestUseJarPath(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
 	if yc.Command() != "/usr/bin/java -jar ./yuicompressor-2.4.8.jar" {
 		t.Error("Impossible to set a new jar_path: " + yc.Command())
 	}
 }
 
 func TestUseJavaPath(t *testing.T) {
-	yc := New()
-	yc.UseJavaPath("/var/test/path/java")
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{
+		"javapath": "/var/test/path/java",
+		"jarpath":  "./yuicompressor-2.4.8.jar"})
 
 	expected_command := "/var/test/path/java -jar ./yuicompressor-2.4.8.jar"
-
 	if yc.Command() != expected_command {
 		t.Error("Impossible to set a new java_path: " + yc.Command())
 	}
 }
 
 func TestUseJvmOptions(t *testing.T) {
-	yc := New()
-	yc.UseJavaPath("/usr/bin/java")
-	yc.UseJvmOptions("-Xms64M -Xmx64M")
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{
+		"javapath":  "/var/test/path/java",
+		"jvmparams": "-Xms64M -Xmx64M",
+		"jarpath":   "./yuicompressor-2.4.8.jar"})
 
-	expected_command := "/usr/bin/java -Xms64M -Xmx64M -jar ./yuicompressor-2.4.8.jar"
+	expected_command := "/var/test/path/java -Xms64M -Xmx64M -jar ./yuicompressor-2.4.8.jar"
 	if yc.Command() != expected_command {
 		t.Error("Impossible to set jvm opts: " + yc.Command())
 	}
@@ -77,8 +80,8 @@ func TestValidity(t *testing.T) {
 	/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAA
 	AAElFTkSuQmCC\') no-repeat scroll left top;}`
 
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	_, err := yc.MinifyCssString(data_uri_css)
 	if err != nil {
 		t.Error(err)
@@ -87,8 +90,8 @@ func TestValidity(t *testing.T) {
 }
 
 func TestMinifyCss(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	output, err := yc.MinifyCssString(fixture_css)
 	if err != nil {
 		t.Error(err)
@@ -99,8 +102,8 @@ func TestMinifyCss(t *testing.T) {
 }
 
 func TestMinifyCssReader(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	fd, err := os.Open("assets_test/test1.css")
 	output, err := yc.MinifyCssReader(fd)
 	if err != nil {
@@ -112,8 +115,8 @@ func TestMinifyCssReader(t *testing.T) {
 }
 
 func TestMinifyCssFile(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	output, err := yc.MinifyCssFile("assets_test/test1.css")
 	if err != nil {
 		t.Error(err)
@@ -124,8 +127,8 @@ func TestMinifyCssFile(t *testing.T) {
 }
 
 func TestMinifyJs(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	output, err := yc.MinifyJsString(fixture_js)
 	if err != nil {
 		t.Error(err)
@@ -136,8 +139,8 @@ func TestMinifyJs(t *testing.T) {
 }
 
 func TestMinifyJsReader(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	fd, err := os.Open("assets_test/test1.js")
 	output, err := yc.MinifyJsReader(fd)
 	if err != nil {
@@ -149,8 +152,8 @@ func TestMinifyJsReader(t *testing.T) {
 }
 
 func TestMinifyJsFile(t *testing.T) {
-	yc := New()
-	yc.UseJarPath("./yuicompressor-2.4.8.jar")
+	yc := NewYuiCompressor().Options(map[string]string{"jarpath": "./yuicompressor-2.4.8.jar"})
+
 	output, err := yc.MinifyJsFile("assets_test/test1.js")
 	if err != nil {
 		t.Error(err)

@@ -21,7 +21,10 @@ After installing Go and setting up your GOPATH, create a golang file.
 	)
 	
 	func main() {
-		yc := yuicompressor.New()
+		yc := NewYuiCompressor().Options(map[string]string{
+			"javapath":  "/var/test/path/java",
+			"jvmparams": "-Xms64M -Xmx64M"})
+	
 		output, err := yc.MinifyCssFile("file.css")
 		if err != nil {
 			panic(err)
@@ -40,7 +43,10 @@ After installing Go and setting up your GOPATH, create a golang file.
 	)
 
 	func main() {
-		yc := yuicompressor.New()
+		yc := NewYuiCompressor().Options(map[string]string{
+			"javapath":  "/var/test/path/java",
+			"jvmparams": "-Xms64M -Xmx64M"})
+
 		output, err := yc.MinifyJsFile("file.js")
 		if err != nil {
 			panic(err)
