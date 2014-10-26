@@ -23,7 +23,7 @@ After installing Go and setting up your GOPATH, create a golang file.
 	)
 	
 	func main() {
-		yc := NewYuiCompressor().Options(map[string]string{
+		yc := yuicompressor.NewYuiCompressor().Options(map[string]string{
 			"javapath":  "/var/test/path/java",
 			"jvmparams": "-Xms64M -Xmx64M"})
 	
@@ -47,7 +47,7 @@ After installing Go and setting up your GOPATH, create a golang file.
 	)
 
 	func main() {
-		yc := NewYuiCompressor().Options(map[string]string{
+		yc := yuicompressor.NewYuiCompressor().Options(map[string]string{
 			"javapath":  "/var/test/path/java",
 			"jvmparams": "-Xms64M -Xmx64M"})
 
